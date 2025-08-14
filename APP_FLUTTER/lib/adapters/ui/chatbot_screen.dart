@@ -13,14 +13,22 @@ class ChatbotScreen extends StatefulWidget {
 
 class _ChatbotScreenState extends State<ChatbotScreen> {
   final _controller = TextEditingController();
+  bool isLoading = false;
 
   void _handleSend() async {
     final text = _controller.text.trim();
     if (text.isEmpty) return;
 
+    setState(() {
+      isLoading = true;
+    });
+
     _controller.clear();
     await widget.controller.send(text);
-    setState(() {});
+
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -53,6 +61,18 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
               },
             ),
           ),
+          if (isLoading)
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  CircularProgressIndicator(),
+                  SizedBox(width: 12),
+                  Text("Generando respuesta..."),
+                ],
+              ),
+            ),
           Padding(
             padding: const EdgeInsets.all(8),
             child: Row(
@@ -64,11 +84,12 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                       hintText: "Escribe tu pregunta...",
                       border: OutlineInputBorder(),
                     ),
+                    enabled: !isLoading,
                   ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.send),
-                  onPressed: _handleSend,
+                  onPressed: isLoading ? null : _handleSend,
                 )
               ],
             ),
