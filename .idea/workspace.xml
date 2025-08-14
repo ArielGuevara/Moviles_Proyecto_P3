@@ -5,13 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7b3a9a1e-59d8-4438-8524-6f987f2e2b92" name="Changes" comment="refactor: integrate chatbot functionality into main app structure">
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/APP_FLUTTER/linux/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/APP_FLUTTER/linux/flutter/generated_plugin_registrant.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/APP_FLUTTER/linux/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/APP_FLUTTER/linux/flutter/generated_plugins.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/APP_FLUTTER/macos/Flutter/GeneratedPluginRegistrant.swift" beforeDir="false" afterPath="$PROJECT_DIR$/APP_FLUTTER/macos/Flutter/GeneratedPluginRegistrant.swift" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/APP_FLUTTER/windows/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/APP_FLUTTER/windows/flutter/generated_plugin_registrant.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/APP_FLUTTER/windows/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/APP_FLUTTER/windows/flutter/generated_plugins.cmake" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
