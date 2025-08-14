@@ -31,12 +31,59 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     });
   }
 
+  Future<void> _clearChat() async {
+    await widget.controller.storage.save([]); // Borra en SharedPreferences
+    setState(() {
+      widget.controller.chat.clear(); // Borra en memoria
+    });
+  }
+
+  void _navigateToVision() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => PlaceholderScreen(title: "Visión por Computadora")),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final messages = widget.controller.chat;
 
     return Scaffold(
       appBar: AppBar(title: const Text("Asistente agrícola 🤖🌱")),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(color: Colors.green),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.ac_unit_rounded, size: 50, color: Colors.white),
+                  Text("Menu de Navegación", style: TextStyle(fontSize: 22, color: Colors.white),),
+                  Text("Universidad de las Fuerzas Armadas ESPE", style: TextStyle(fontSize: 10, color: Colors.white70),),
+                ],
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.chat),
+              title: const Text("Chatbot"),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text("Visión por Computadora"),
+              onTap: () {
+                Navigator.pop(context);
+                _navigateToVision();
+              },
+            ),
+          ],
+        ),
+      ),
       body: Column(
         children: [
           Expanded(
@@ -46,8 +93,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
               itemBuilder: (_, index) {
                 final Message msg = messages[index];
                 return Align(
-                  alignment:
-                  msg.isUser ? Alignment.centerRight : Alignment.centerLeft,
+                  alignment: msg.isUser ? Alignment.centerRight : Alignment.centerLeft,
                   child: Container(
                     margin: const EdgeInsets.symmetric(vertical: 4),
                     padding: const EdgeInsets.all(12),
@@ -77,6 +123,18 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
             padding: const EdgeInsets.all(8),
             child: Row(
               children: [
+                PopupMenuButton<String>(
+                  icon: const Icon(Icons.settings),
+                  onSelected: (value) {
+                    if (value == 'clear') _clearChat();
+                  },
+                  itemBuilder: (context) => [
+                    const PopupMenuItem(
+                      value: 'clear',
+                      child: Text('Borrar chat'),
+                    ),
+                  ],
+                ),
                 Expanded(
                   child: TextField(
                     controller: _controller,
@@ -96,6 +154,20 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
           ),
         ],
       ),
+    );
+  }
+}
+
+// Pantalla de ejemplo para navegación
+class PlaceholderScreen extends StatelessWidget {
+  final String title;
+  const PlaceholderScreen({super.key, required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(title)),
+      body: Center(child: Text("Aquí irá la funcionalidad de $title")),
     );
   }
 }
