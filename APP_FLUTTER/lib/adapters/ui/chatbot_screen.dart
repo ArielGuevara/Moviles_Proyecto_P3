@@ -36,7 +36,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     final messages = widget.controller.chat;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Asistente agrícola")),
+      appBar: AppBar(title: const Text("Asistente agrícola 🤖🌱")),
       body: Column(
         children: [
           Expanded(

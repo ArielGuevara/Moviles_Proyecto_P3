@@ -8,7 +8,7 @@ class OllamaChatService implements ChatbotInterface {
 
   OllamaChatService({
     this.baseUrl = "http://192.168.100.68:8000", // o la IP local
-    this.modelName = "tinyllama",
+    this.modelName = "llama3",
   });
 
   @override
