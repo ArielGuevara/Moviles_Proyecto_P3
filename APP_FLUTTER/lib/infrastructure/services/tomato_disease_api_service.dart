@@ -8,7 +8,7 @@ class TomatoDiseaseApiService implements DiseaseDetectionInterface {
   final String baseUrl;
 
   TomatoDiseaseApiService({
-    this.baseUrl = "http://192.168.100.31:8000", // Cambia por tu API URL
+    this.baseUrl = "http://192.168.100.68:8001", // Cambia por tu API URL
   });
 
   @override

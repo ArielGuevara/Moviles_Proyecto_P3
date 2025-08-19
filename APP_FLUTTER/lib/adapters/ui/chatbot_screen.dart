@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../application/chatbot_controller.dart';
 import '../../core/domain/entities/message.dart';
@@ -35,24 +36,37 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     });
   }
 
+  Future<void> _clearChat() async {
+    await widget.controller.storage.save([]);
+    setState(() {
+      widget.controller.chat.clear();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final messages = widget.controller.chat;
-    final theme = Theme.of(context);
     final themeManager = Provider.of<ThemeManager>(context);
     final isDark = themeManager.isDarkMode;
 
     return AppBackground(
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount: messages.length,
-                itemBuilder: (_, index) {
-                  final Message msg = messages[index];
-                  return Align(
-                    alignment: msg.isUser ? Alignment.centerRight : Alignment.centerLeft,
+      child: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: messages.length,
+              itemBuilder: (_, index) {
+                final Message msg = messages[index];
+                return Align(
+                  alignment: msg.isUser ? Alignment.centerRight : Alignment.centerLeft,
+                  child: GestureDetector(
+                    onLongPress: () {
+                      Clipboard.setData(ClipboardData(text: msg.text));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Texto copiado')),
+                      );
+                    },
                     child: Container(
                       margin: const EdgeInsets.symmetric(vertical: 6),
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -75,85 +89,86 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                       child: Text(
                         msg.text,
                         style: TextStyle(
-                          color: msg.isUser 
-                              ? Colors.white 
+                          color: msg.isUser
+                              ? Colors.white
                               : (isDark ? modernDarkText : modernLightText),
                           fontSize: 16,
                         ),
                       ),
                     ),
-                  );
-                },
+                  ),
+                );
+              },
+            ),
+          ),
+          if (isLoading)
+            Container(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      isDark ? azulVibrante : azulVibrante,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Text(
+                    "Generando respuesta...",
+                    style: TextStyle(
+                      color: isDark ? modernDarkSecondaryText : modernLightSecondaryText,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
               ),
             ),
-            if (isLoading)
-              Container(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        isDark ? azulVibrante : azulVibrante,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Text(
-                      "Generando respuesta...",
-                      style: TextStyle(
-                        color: isDark ? modernDarkSecondaryText : modernLightSecondaryText,
-                        fontSize: 16,
-                      ),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: isDark ? modernDarkSurface.withOpacity(0.8) : Colors.white.withOpacity(0.9),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, -2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                PopupMenuButton<String>(
+                  icon: const Icon(Icons.settings),
+                  onSelected: (value) {
+                    if (value == 'clear') _clearChat();
+                  },
+                  itemBuilder: (context) => [
+                    const PopupMenuItem(
+                      value: 'clear',
+                      child: Text('Borrar chat'),
                     ),
                   ],
                 ),
-              ),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: isDark ? modernDarkSurface.withOpacity(0.8) : Colors.white.withOpacity(0.9),
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, -2),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _controller,
-                      decoration: InputDecoration(
-                        hintText: "Escribe tu pregunta...",
-                        hintStyle: TextStyle(
-                          color: isDark ? modernDarkMutedText : modernLightMutedText,
-                        ),
-                      ),
-                      enabled: !isLoading,
-                      style: TextStyle(
-                        color: isDark ? modernDarkText : modernLightText,
-                      ),
+                Expanded(
+                  child: TextField(
+                    controller: _controller,
+                    decoration: const InputDecoration(
+                      hintText: "Escribe tu pregunta...",
+                      border: OutlineInputBorder(),
                     ),
+                    enabled: !isLoading,
                   ),
-                  const SizedBox(width: 12),
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: isDark ? primaryGradientDark : primaryGradientLight,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.send, color: Colors.white),
-                      onPressed: isLoading ? null : _handleSend,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.send),
+                  onPressed: isLoading ? null : _handleSend,
+                )
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -7,14 +7,14 @@ class OllamaChatService implements ChatbotInterface {
   final String modelName;
 
   OllamaChatService({
-    this.baseUrl = "http://192.168.100.68:8000", // o la IP local
+    this.baseUrl = "http://192.168.100.68:8001",
     this.modelName = "llama3",
   });
 
   @override
   Future<String> sendMessage(String prompt) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/api/generate'),
+      Uri.parse('$baseUrl/api/generate_stream'),
       headers: {
         'Content-Type': 'application/json',
         'User-Agent': 'FlutterApp/1.0'
@@ -22,15 +22,28 @@ class OllamaChatService implements ChatbotInterface {
       body: jsonEncode({
         "model": modelName,
         "prompt": prompt,
-        "stream": false
+        "stream": true
       }),
     );
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return data['response'] ?? "No response";
+      // Procesa cada línea como JSON y extrae el campo 'response'
+      final lines = response.body.split('\n');
+      final buffer = StringBuffer();
+      for (final line in lines) {
+        if (line.trim().isEmpty) continue;
+        try {
+          final jsonLine = json.decode(line);
+          if (jsonLine['response'] != null) {
+            buffer.write(jsonLine['response']);
+          }
+        } catch (_) {
+          // Ignora líneas que no sean JSON válidos
+        }
+      }
+      return buffer.toString().trim();
     } else {
-      throw Exception('Error al comunicarse con Ollama');
+      throw Exception('Error al comunicarse con el backend');
     }
   }
 }
